@@ -12,7 +12,7 @@ exports.login = async (req, res) => {
         if (!oldUser) {
             return res
                 .status(404)
-                .json({ message: "User doesn't exist", success: false });
+                .json({ success: false, message: "User doesn't exist" });
         }
 
         // check password
@@ -24,7 +24,7 @@ exports.login = async (req, res) => {
         if (!isPasswordCorrect) {
             return res
                 .status(400)
-                .json({ message: 'Invalid credentials', success: false });
+                .json({ success: false, message: 'Invalid credentials' });
         }
 
         // token user for authentication
@@ -37,6 +37,14 @@ exports.login = async (req, res) => {
             process.env.JWT_SECRET_KEY,
             { expiresIn: '1h' }
         );
+
+        //add auth_token to user data
+        await UserModal.findOneAndUpdate(
+            { email: email },
+            { auth_token: token }
+        );
+
+        oldUser.auth_token = token;
 
         // successfully response
         res.status(200).json({
@@ -95,6 +103,39 @@ exports.register = async (req, res) => {
         res.status(500).json({
             success: false,
             message: 'Something went wrong.',
+        });
+        console.log(err);
+    }
+};
+
+exports.logout = async (req, res) => {
+    try {
+        // find user in database
+        const oldUser = await UserModal.findOne({
+            auth_token: res.locals.token,
+        });
+
+        if (!oldUser) {
+            return res
+                .status(404)
+                .json({ success: false, message: 'User not found' });
+        }
+
+        // remove auth_token from user data
+        await UserModal.findOneAndUpdate(
+            { _id: oldUser._id },
+            { auth_token: '' }
+        );
+
+        // successfully response
+        res.status(200).json({
+            success: true,
+            message: 'User logged out successfully.',
+        });
+    } catch (err) {
+        res.status(500).json({
+            success: false,
+            message: 'Something went wrong',
         });
         console.log(err);
     }

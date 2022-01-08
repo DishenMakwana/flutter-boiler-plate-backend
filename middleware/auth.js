@@ -28,6 +28,7 @@ exports.validateRegisterRequest = async (req, res, next) => {
             return res.status(400).json(responseFormet);
         } else {
             let flag = false;
+
             // email is already exist
             if (await UserModal.findOne({ email: email })) {
                 responseFormet.data.email = ['Email already exists'];
@@ -47,10 +48,12 @@ exports.validateRegisterRequest = async (req, res, next) => {
                 ];
                 flag = true;
             }
+
             if (flag) {
                 return res.status(400).json(responseFormet);
             }
         }
+
         next();
     } catch (err) {
         responseFormet.data.message = ['Something went wrong'];
@@ -87,8 +90,8 @@ exports.validateLoginRequest = async (req, res, next) => {
 };
 
 exports.validateToken = async (req, res, next) => {
+    let checkToken, token;
     try {
-        let token;
         if (
             req.headers.authorization &&
             req.headers.authorization.startsWith('Bearer')
@@ -101,7 +104,6 @@ exports.validateToken = async (req, res, next) => {
             return res.status(401).json(responseFormet);
         }
 
-        let checkToken;
         try {
             checkToken = jwt.verify(token, process.env.JWT_SECRET_KEY);
         } catch (err) {
@@ -109,20 +111,15 @@ exports.validateToken = async (req, res, next) => {
             res.status(500).json(responseFormet);
             console.log(err);
         }
-
-        let db_token = await UserToken.findOne({
-            where: { user_id: checkToken.id, token: token },
-        });
-
-        if (!db_token) {
-            responseFormet.data.message = ['Invalid token'];
-            res.status(500).json(responseFormet);
-            console.log(err);
-        }
     } catch (err) {
-        responseFormet.data.message = ['Something went wrong'];
+        responseFormet.message = 'Something went wrong';
         res.status(500).json(responseFormet);
         console.log(err);
     }
+
+    // res added with token and id for controller
+    res.locals.token = token;
+    res.locals.id = checkToken.id;
+
     next();
 };
