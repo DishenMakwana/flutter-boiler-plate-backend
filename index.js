@@ -5,12 +5,7 @@ const dotenv = require('dotenv');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 // const swaggerUi = require('swagger-ui-express');
-// const swaggerDocument = require('./swagger/swagger_output.json');
-// const fs = require('fs');
-// const customCss = fs.readFileSync(
-//     process.cwd() + '/swagger/swagger.css',
-//     'utf8'
-// );
+// const swaggerJsDoc = require('swagger-jsdoc');
 
 //routers
 const userRoute = require('./routes/users.js');
@@ -41,15 +36,42 @@ app.use((req, res, next) => {
     next();
 });
 
+// swagger
+// const swaggerDefinition = {
+//     openapi: '3.0.0',
+//     info: {
+//         title: 'Express API for JSONPlaceholder',
+//         version: '1.0.0',
+//         description:
+//             'This is a REST API application made with Express. It retrieves data from JSONPlaceholder.',
+//         license: {
+//             name: 'Licensed Under MIT',
+//             url: 'https://spdx.org/licenses/MIT.html',
+//         },
+//         contact: {
+//             name: 'JSONPlaceholder',
+//             url: 'https://jsonplaceholder.typicode.com',
+//         },
+//     },
+//     servers: [
+//         {
+//             url: 'http://localhost:3000',
+//             description: 'Development server',
+//         },
+//     ],
+// };
+
+// const options = {
+//     swaggerDefinition,
+//     // Paths to files containing OpenAPI definitions
+//     apis: ['./routes/*.js'],
+// };
+
+// const swaggerSpec = swaggerJsDoc(options);
+// app.use('api/docs', swaggerUi.serve, swaggerUi.setup(swaggerJsDoc));
+
 // routes
 app.use('/auth', userRoute);
-
-// use swagger api documentation
-// app.use(
-//     '/api/docs',
-//     swaggerUi.serve,
-//     swaggerUi.setup(swaggerDocument, { customCss })
-// );
 
 // Port Number
 const PORT = process.env.PORT || 5000;

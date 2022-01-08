@@ -11,7 +11,7 @@ exports.login = async (req, res) => {
         // check response form database
         if (!oldUser) {
             return res
-                .status(404)
+                .status(200) // 404 - not found
                 .json({ success: false, message: "User doesn't exist" });
         }
 
@@ -23,7 +23,7 @@ exports.login = async (req, res) => {
 
         if (!isPasswordCorrect) {
             return res
-                .status(400)
+                .status(200) // 400 - bad request
                 .json({ success: false, message: 'Invalid credentials' });
         }
 
@@ -53,7 +53,7 @@ exports.login = async (req, res) => {
             message: 'User logged in successfully.',
         });
     } catch (err) {
-        res.status(500).json({ message: 'Something went wrong' });
+        res.status(200).json({ message: 'Something went wrong' }); // 500 - internal server error
         console.log(err);
     }
 };
@@ -66,7 +66,7 @@ exports.register = async (req, res) => {
 
         if (oldUser) {
             return res
-                .status(400)
+                .status(200) // 400 - bad request
                 .json({ success: false, message: 'Email already exists.' });
         }
 
@@ -94,16 +94,16 @@ exports.register = async (req, res) => {
         // if user created get data in oldUser
         const newUser = await UserModal.findOne({ email });
 
-        res.status(201).json({
+        res.status(200).json({
             success: true,
             message: 'User created successfully.',
             user: newUser,
         });
     } catch (err) {
-        res.status(500).json({
+        res.status(200).json({
             success: false,
             message: 'Something went wrong.',
-        });
+        }); // 500 - internal server error
         console.log(err);
     }
 };
@@ -117,7 +117,7 @@ exports.logout = async (req, res) => {
 
         if (!oldUser) {
             return res
-                .status(404)
+                .status(200) // 404 - not found
                 .json({ success: false, message: 'User not found' });
         }
 
@@ -133,10 +133,10 @@ exports.logout = async (req, res) => {
             message: 'User logged out successfully.',
         });
     } catch (err) {
-        res.status(500).json({
+        res.status(200).json({
             success: false,
             message: 'Something went wrong',
-        });
+        }); // 500 - internal server error
         console.log(err);
     }
 };

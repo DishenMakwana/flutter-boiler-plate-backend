@@ -25,7 +25,7 @@ exports.validateRegisterRequest = async (req, res, next) => {
             if (!password) {
                 responseFormet.data.password = ['Provide proper password'];
             }
-            return res.status(400).json(responseFormet);
+            return res.status(200).json(responseFormet); // 400 - bad request
         } else {
             let flag = false;
 
@@ -50,14 +50,14 @@ exports.validateRegisterRequest = async (req, res, next) => {
             }
 
             if (flag) {
-                return res.status(400).json(responseFormet);
+                return res.status(200).json(responseFormet); // 400 - bad request
             }
         }
 
         next();
     } catch (err) {
         responseFormet.data.message = ['Something went wrong'];
-        res.status(500).json(responseFormet);
+        res.status(200).json(responseFormet); // 500 - internal server error
         console.log(err);
     }
 };
@@ -73,18 +73,18 @@ exports.validateLoginRequest = async (req, res, next) => {
             if (!password) {
                 responseFormet.data.password = ['Provide proper password'];
             }
-            return res.status(400).json(responseFormet);
+            return res.status(200).json(responseFormet); // 400 - bad request
         } else if (password.length < 6) {
             // password is less than 6 characters
             responseFormet.data.password = [
                 'Password must be at least 6 characters long',
             ];
-            return res.status(400).json(responseFormet);
+            return res.status(200).json(responseFormet); // 400 - bad request
         }
         next();
     } catch (err) {
         responseFormet.data.message = ['Something went wrong'];
-        res.status(500).json(responseFormet);
+        res.status(200).json(responseFormet); // 500 - internal server error
         console.log(err);
     }
 };
@@ -101,19 +101,19 @@ exports.validateToken = async (req, res, next) => {
 
         if (!token) {
             responseFormet.data.message = ['No token provided'];
-            return res.status(401).json(responseFormet);
+            return res.status(200).json(responseFormet); // 401 - unauthorized
         }
 
         try {
             checkToken = jwt.verify(token, process.env.JWT_SECRET_KEY);
         } catch (err) {
             responseFormet.data.message = ['Something went wrong'];
-            res.status(500).json(responseFormet);
+            res.status(200).json(responseFormet); // 500 - internal server error
             console.log(err);
         }
     } catch (err) {
         responseFormet.message = 'Something went wrong';
-        res.status(500).json(responseFormet);
+        res.status(200).json(responseFormet); // 500 - internal server error
         console.log(err);
     }
 
